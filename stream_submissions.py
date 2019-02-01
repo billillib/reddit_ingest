@@ -2,6 +2,7 @@ import json
 
 import praw
 import boto3
+from profanity_check import predict, predict_prob
 
 import vars
 
@@ -25,13 +26,18 @@ try:
     while True:
         try:
             for s in submissions:
-
+                # Check if title is profane
+                profanity_array = []
+                profanity_array.append(s.title)
+                profanity_flag = predict(profanity_array)
+                # Dump to json
                 jsonItem = json.dumps(
                     {
                         "title": s.title,
                         "sub": s.subreddit_name_prefixed,
                         "author": s.author.fullname,
                         "nsfw": s.over_18,
+                        "profanity_flag": int(profanity_flag[0])
                     }
                 )
 
